@@ -65,10 +65,10 @@ def get_encryption(cell):
     else:
         for line in cell:
             matching = match(line,"IE:")
-            if matching != None:
-                wpa = match(matching,"WPA Version ")
-                if wpa != None:
-                    enc = "WPA v." + wpa
+            if matching is not None:
+		        wpa = re.search("WPA[2]*", matching)
+                if wpa is not None:
+                    enc = wpa.group(0)
         if enc == "":
             enc = "WEP"
     return enc
@@ -181,7 +181,12 @@ def get_parsed_cells(iw_data, rules=None):
     cells = [[]]
     parsed_cells = []
 
-    for line in iw_data:
+    if type(iw_data) == type(""):
+      lines = iw_data.splitlines()
+    else:
+      lines = iw_data
+
+    for line in lines:
         cell_line = match(line, "Cell ")
         if cell_line != None:
             cells.append([])
